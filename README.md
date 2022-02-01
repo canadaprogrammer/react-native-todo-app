@@ -129,3 +129,73 @@
       },
     });
     ```
+
+## TextInput
+
+- A foundational component for inputting text into the app via a keyboard. Props provide configurability for several features, such as auto-correction, auto-capitalization, placeholder text, and different keyboard types, such as a numeric keypad.
+
+- The most basic use case is to plop down a TextInput and subscribe to the onChangeText events to read the user input. There are also other events, such as onSubmitEditing and onFocus that can be subscribed to.
+
+- `placeholder`: The string that will be rendered before text input has been entered.
+
+- `placeholderTextColor`: The text color of the placeholder string.
+
+- `keyboardType`: The following values work across platforms: `default`, `number-pad`, `decimal-pad`, `numeric`, `email-address`, `phone-pad`
+
+- `returnKeyType`: Determines how the return key should look. On Android you can also use `returnKeyLabel`.
+
+  - The following values work across platforms: `done`, `go`, `next`, `search`, `send`
+
+- `secureTextEntry`: If `true`, the text input obscures the text entered so that sensitive text like passwords stay secure. The default value is `false`. Does not work with `multiline={true}`.
+
+- `multiline`: If `true`, the text input can be multiple lines. The default value is `false`. It is important to note that this aligns the text to the top on iOS, and centers it on Android. Use with `textAlignVertical` set to `top` for the same behavior in both platforms.
+
+- `onChangeText`: Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
+
+- `autoCorrect`: If `false`, disables auto-correct. The default value is `true`.
+
+- `autoCapitalize`: Tells TextInput to automatically capitalize certain characters. This property is not supported by some keyboard types such as name-phone-pad.
+
+  - `characters`: all characters.
+
+  - `words`: first letter of each word.
+
+  - `sentences`: first letter of each sentence (default).
+
+  - `none`: don't auto capitalize anything.
+
+- ```jsx
+  import { ..., TextInput } from 'react-native';
+  ...
+
+  export default function App() {
+    ...
+    const [text, setText] = useState('');
+    const onChangeText = (payload) => setText(payload);
+    return (
+      <View style={styles.container}>
+        ...
+        <View>
+          <TextInput
+            placeholder={working ? 'Add a To Do' : 'Where do you want to go?'}
+            onChangeText={onChangeText}
+            value={text}
+            style={styles.input}
+          />
+        </View>
+      </View>
+    );
+  }
+
+  const styles = StyleSheet.create({
+    ...
+    input: {
+      backgroundColor: 'white',
+      paddingVertical: 8,
+      paddingHorizontal: 15,
+      borderRadius: 25,
+      marginTop: 20,
+      fontSize: 18,
+    },
+  });
+  ```
