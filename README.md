@@ -1,6 +1,8 @@
 # React Native Todo App
 
-## TouchableOpacity
+## Button Style
+
+### TouchableOpacity
 
 - A wrapper for making views respond properly to touches. On press down, the opacity of the wrapped view is decreased, dimming it.
 
@@ -16,7 +18,7 @@
   </TouchableOpacity>
   ```
 
-## TouchableHighlight
+### TouchableHighlight
 
 - A wrapper for making views respond properly to touches. On press down, the opacity of the wrapped view is decreased, which allows the underlay color to show through, darkening or tinting the view.
 
@@ -30,7 +32,7 @@
   </TouchableHighlight>
   ```
 
-## TouchableWithoutFeedback
+### TouchableWithoutFeedback
 
 - Do not use unless you have a very good reason. All elements that respond to press should have a visual feedback when touched.
 
@@ -42,7 +44,7 @@
   </TouchableWithoutFeedback>
   ```
 
-## Pressable
+### Pressable
 
 - If you're looking for a more extensive and future-proof way to handle touch-based input, check out the Pressable API.
 
@@ -57,3 +59,73 @@
     <Text>I'm pressable!</Text>
   </Pressable>
   ```
+
+### Active and Inactive Style
+
+- Create `colors.js`
+
+  - ```js
+    export const theme = {
+      bg: 'black',
+      grey: '#3a3d40',
+    };
+    ```
+
+- On `App.js`
+
+  - ```jsx
+    import { StatusBar } from 'expo-status-bar';
+    import React, { useState } from 'react';
+    import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+    import { theme } from './colors';
+
+    export default function App() {
+      const [working, setWorking] = useState(true);
+      const travel = () => setWorking(false);
+      const work = () => setWorking(true);
+      return (
+        <View style={styles.container}>
+          <StatusBar style='auto' />
+          <View style={styles.header}>
+            <TouchableOpacity onPress={work}>
+              <Text
+                style={{
+                  ...styles.btnText,
+                  color: working ? 'white' : theme.grey,
+                }}
+              >
+                Work
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={travel}>
+              <Text
+                style={{
+                  ...styles.btnText,
+                  color: working ? theme.grey : 'white',
+                }}
+              >
+                Travel
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
+
+    const styles = StyleSheet.create({
+      container: {
+        flex: 1,
+        backgroundColor: theme.bg,
+        paddingHorizontal: 20,
+      },
+      header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 100,
+      },
+      btnText: {
+        fontSize: 40,
+        fontWeight: '600',
+      },
+    });
+    ```
