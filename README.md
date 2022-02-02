@@ -146,6 +146,8 @@
 
   - The following values work across platforms: `done`, `go`, `next`, `search`, `send`
 
+- `onSubmitEditing`: Callback that is called when the text input's submit button is pressed.
+
 - `secureTextEntry`: If `true`, the text input obscures the text entered so that sensitive text like passwords stay secure. The default value is `false`. Does not work with `multiline={true}`.
 
 - `multiline`: If `true`, the text input can be multiple lines. The default value is `false`. It is important to note that this aligns the text to the top on iOS, and centers it on Android. Use with `textAlignVertical` set to `top` for the same behavior in both platforms.
@@ -180,6 +182,7 @@
             placeholder={working ? 'Add a To Do' : 'Where do you want to go?'}
             onChangeText={onChangeText}
             value={text}
+            returnKeyType='done'
             style={styles.input}
           />
         </View>
@@ -198,4 +201,44 @@
       fontSize: 18,
     },
   });
+  ```
+
+## Add ToDos
+
+- `onSubmitEditing`: Callback that is called when the text input's submit button is pressed.
+
+- Add object to object
+
+  - ```js
+    Object.assign(
+      {},
+      obj,
+      {newObj}
+    );
+    ```
+
+- ```jsx
+  export default function App() {
+    ...
+    const [toDos, setToDos] = useState({});
+    ...
+    const addTodo = () => {
+      if (text === '') {
+        return;
+      }
+      // save toDos
+      const newToDos = Object.assign({}, toDos, {
+        [Date.now()]: { text, work: working },
+      });
+      setToDos(newToDos);
+      // initialize input
+      setText('');
+    };
+    return (
+      ...
+          <TextInput
+            ...
+            onSubmitEditing={addTodo}
+          />
+        ...
   ```
