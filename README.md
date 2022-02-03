@@ -227,9 +227,14 @@
         return;
       }
       // save toDos
-      const newToDos = Object.assign({}, toDos, {
+      // const newToDos = Object.assign({}, toDos, {
+      //   [Date.now()]: { text, work: working },
+      // });
+      // ES6
+      const newToDos = {
+        ...toDos,
         [Date.now()]: { text, work: working },
-      });
+      };
       setToDos(newToDos);
       // initialize input
       setText('');
@@ -241,4 +246,43 @@
             onSubmitEditing={addTodo}
           />
         ...
+  ```
+
+## ToDos List
+
+- ```JSX
+  ...
+  import { ..., ScrollView } from 'react-native';
+
+  export default function App() {
+    ...
+        <ScrollView style={styles.scrollView}>
+          {Object.keys(toDos).map((key) => (
+            <View key={key} style={styles.toDo}>
+              <Text style={styles.toDoText}>{toDos[key].text}</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    );
+  }
+
+  const styles = StyleSheet.create({
+    ...,
+    scrollView: {
+      marginVertical: 15,
+    },
+    toDo: {
+      backgroundColor: theme.toDoBg,
+      marginBottom: 15,
+      paddingVertical: 8,
+      paddingHorizontal: 15,
+      borderRadius: 8,
+    },
+    toDoText: {
+      color: 'white',
+      fontSize: 16,
+      fontWeight: '500',
+    },
+  });
   ```
