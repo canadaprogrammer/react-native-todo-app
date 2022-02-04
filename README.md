@@ -311,6 +311,10 @@
 
   - `import AsyncStorage from '@react-native-async-storage/async-storage';`
 
+  - `AsyncStorage.setItem(key: string, value: string, [callback]: ?(error: ?Error, result: ?string) => void)`
+
+  - `AsyncStorage.getItem(key: string, [callback]: ?(error: ?Error, result: ?string) => void)`
+
 - ```jsx
   ...
   import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -343,3 +347,85 @@
       setText('');
     };
   ```
+
+## Remove ToDo on a phone
+
+- `Alert`: Launches an alert dialog with the specified title and message.
+
+  - `AlertButtonStyle` (iOS): `default`, `cancel`, `destructive`
+  - ```jsx
+    Alert.alert(
+      'Alert Title',
+      'Alert Message',
+      [
+        {
+          text:'Ask me later',
+          onPress: () => console.log('Ask me later pressed'),
+          style: 'ask'
+        },
+        {
+          text: '',
+          onPress: () => {}
+        }
+      ]
+    );
+    ```
+
+- ```jsx
+  ...
+  import { ..., Alert } from 'react-native';
+  import { FontAwesome5 } from '@expo/vector-icons';
+  ...
+
+  export default function App() {
+    ...
+    const removeToDo = async (key) => {
+      Alert.alert(
+        'Remove ToDo',
+        'Are you sure to delete "' + toDos[key].text + '?"',
+        [
+          {
+            text: 'Cancel',
+          },
+          {
+            text: 'OK',
+            style: 'destructive',
+            onPress: async () => {
+              const newToDos = { ...toDos };
+              delete newToDos[key];
+              setToDos(newToDos);
+              await saveToDos(newToDos);
+            },
+          },
+        ]
+      );
+    };
+    return (
+      ...
+        <ScrollView style={styles.scrollView}>
+          {Object.keys(toDos).map((key) =>
+            ...
+                <TouchableOpacity
+                  onPress={() => removeToDo(key)}
+                  style={styles.delBtn}
+                >
+                  <FontAwesome5 name='trash-alt' size={16} color={theme.gray} />
+                </TouchableOpacity>
+              ...
+    );
+  }
+
+  const styles = StyleSheet.create({
+    ...
+    toDo: {
+      ...
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    ...
+    delBtn: {
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+    },
+  });

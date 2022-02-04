@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from './colors';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 const STORAGE_KEY = '@toDos';
 
@@ -38,6 +40,7 @@ export default function App() {
   useEffect(async () => {
     await getToDos();
   }, []);
+
   const addToDo = async () => {
     if (text === '') {
       return;
@@ -50,6 +53,27 @@ export default function App() {
     setToDos(newToDos);
     await saveToDos(newToDos);
     setText('');
+  };
+  const removeToDo = async (key) => {
+    Alert.alert(
+      'Remove ToDo',
+      'Are you sure to delete "' + toDos[key].text + '?"',
+      [
+        {
+          text: 'Cancel',
+        },
+        {
+          text: 'OK',
+          style: 'destructive',
+          onPress: async () => {
+            const newToDos = { ...toDos };
+            delete newToDos[key];
+            setToDos(newToDos);
+            await saveToDos(newToDos);
+          },
+        },
+      ]
+    );
   };
   return (
     <View style={styles.container}>
@@ -86,6 +110,12 @@ export default function App() {
           toDos[key].working === working ? (
             <View key={key} style={styles.toDo}>
               <Text style={styles.toDoText}>{toDos[key].text}</Text>
+              <TouchableOpacity
+                onPress={() => removeToDo(key)}
+                style={styles.delBtn}
+              >
+                <FontAwesome5 name='trash-alt' size={16} color={theme.gray} />
+              </TouchableOpacity>
             </View>
           ) : null
         )}
@@ -126,10 +156,17 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   toDoText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '500',
+  },
+  delBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
 });
