@@ -429,3 +429,36 @@
       paddingHorizontal: 16,
     },
   });
+
+## Track the last active menu
+
+- ```jsx
+  ...
+  const STORAGE_TRACK_KEY = '@work';
+
+  export default function App() {
+    ...
+    const tracking = async (trackWorking) => {
+      try {
+        await AsyncStorage.setItem(
+          STORAGE_TRACK_KEY,
+          JSON.stringify(trackWorking)
+        );
+      } catch (err) {
+        console.warn(err);
+      }
+    };
+    const travel = () => {
+      setWorking(false);
+      tracking(false);
+    };
+    const work = () => {
+      setWorking(true);
+      tracking(true);
+    };
+  ```
+
+## challenge 2 - complete todo
+
+
+## challenge 3 - edit todo

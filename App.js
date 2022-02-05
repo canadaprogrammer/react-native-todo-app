@@ -14,27 +14,46 @@ import { theme } from './colors';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 const STORAGE_KEY = '@toDos';
+const STORAGE_TRACK_KEY = '@work';
 
 export default function App() {
   const [working, setWorking] = useState(true);
   const [text, setText] = useState('');
   const [toDos, setToDos] = useState({});
-  const travel = () => setWorking(false);
-  const work = () => setWorking(true);
+  const tracking = async (trackWorking) => {
+    try {
+      await AsyncStorage.setItem(
+        STORAGE_TRACK_KEY,
+        JSON.stringify(trackWorking)
+      );
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+  const travel = () => {
+    setWorking(false);
+    tracking(false);
+  };
+  const work = () => {
+    setWorking(true);
+    tracking(true);
+  };
   const onChangeText = (payload) => setText(payload);
   const saveToDos = async (toSave) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
     } catch (err) {
-      console.log(err);
+      console.warn(err);
     }
   };
   const getToDos = async () => {
     try {
       const getToDos = await AsyncStorage.getItem(STORAGE_KEY);
+      const getTrack = await AsyncStorage.getItem(STORAGE_TRACK_KEY);
       setToDos(getToDos != null ? JSON.parse(getToDos) : {});
+      setWorking(getTrack != null ? JSON.parse(getTrack) : true);
     } catch (err) {
-      console.log(err);
+      console.warn(err);
     }
   };
   useEffect(async () => {
