@@ -12,6 +12,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from './colors';
 import { FontAwesome5 } from '@expo/vector-icons';
+import Checkbox from 'expo-checkbox';
 
 const STORAGE_KEY = '@toDos';
 const STORAGE_TRACK_KEY = '@work';
@@ -20,6 +21,7 @@ export default function App() {
   const [working, setWorking] = useState(true);
   const [text, setText] = useState('');
   const [toDos, setToDos] = useState({});
+
   const tracking = async (trackWorking) => {
     try {
       await AsyncStorage.setItem(
@@ -67,7 +69,7 @@ export default function App() {
     // save to do
     const newToDos = {
       ...toDos,
-      [Date.now()]: { text, working },
+      [Date.now()]: { text, working, isComplete: false },
     };
     setToDos(newToDos);
     await saveToDos(newToDos);
@@ -93,6 +95,16 @@ export default function App() {
         },
       ]
     );
+  };
+  const completeToDo = async (toDoKey) => {
+    const editToDos = { ...toDos };
+    Object.keys(editToDos).forEach((key) => {
+      if (key === toDoKey) {
+        editToDos[toDoKey].isComplete = !editToDos[toDoKey].isComplete;
+      }
+    });
+    setToDos(editToDos);
+    await saveToDos(editToDos);
   };
   return (
     <View style={styles.container}>
@@ -121,14 +133,28 @@ export default function App() {
           onSubmitEditing={addToDo}
           returnKeyType='done'
           style={styles.input}
-          autoFocus
         />
       </View>
       <ScrollView style={styles.scrollView}>
         {Object.keys(toDos).map((key) =>
           toDos[key].working === working ? (
             <View key={key} style={styles.toDo}>
-              <Text style={styles.toDoText}>{toDos[key].text}</Text>
+              <Checkbox
+                style={styles.checkbox}
+                value={toDos[key].isComplete}
+                onValueChange={() => completeToDo(key)}
+              />
+              <Text
+                style={{
+                  ...styles.toDoText,
+                  textDecorationLine: toDos[key].isComplete
+                    ? 'line-through'
+                    : 'none',
+                  textDecorationStyle: 'solid',
+                }}
+              >
+                {toDos[key].text}
+              </Text>
               <TouchableOpacity
                 onPress={() => removeToDo(key)}
                 style={styles.delBtn}
@@ -183,6 +209,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '500',
+    width: '70%',
   },
   delBtn: {
     paddingVertical: 8,

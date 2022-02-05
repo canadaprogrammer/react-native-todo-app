@@ -458,7 +458,59 @@
     };
   ```
 
-## challenge 2 - complete todo
+## Complete ToDo
 
+- `Checkbox`: `expo-checkbox` provides a basic boolean input element for all platforms.
+
+  - `expo install expo-checkbox`
+
+  - Props
+
+    - `color` (ColorValue): The tint or color of the checkbox. This overrides the disabled opaque style.
+
+    - `disabled` (boolean): If the checkbox is disabled, it becomes opaque and uncheckable.
+
+    - `value` (boolean): Value indicating if the checkbox should be rendered as checked or not. Default value is false.
+
+    - `onChange` (callback): Callback that is invoked when the user presses the checkbox.
+
+    - `onValueChange` (callback): Callback that is invoked when the user presses the checkbox.
+
+- ```jsx
+  ...
+  import Checkbox from 'expo-checkbox';
+  ...
+  export default function App() {
+    ...
+    const completeToDo = async (toDoKey) => {
+      const editToDos = { ...toDos };
+      Object.keys(editToDos).forEach((key) => {
+        if (key === toDoKey) {
+          editToDos[toDoKey].isComplete = !editToDos[toDoKey].isComplete;
+        }
+      });
+      setToDos(editToDos);
+      await saveToDos(editToDos);
+    };
+    return (
+      ...
+                <Checkbox
+                  style={styles.checkbox}
+                  value={toDos[key].isComplete}
+                  onValueChange={() => completeToDo(key)}
+                />
+                <Text
+                  style={{
+                    ...styles.toDoText,
+                    textDecorationLine: toDos[key].isComplete
+                      ? 'line-through'
+                      : 'none',
+                    textDecorationStyle: 'solid',
+                  }}
+                >
+                  {toDos[key].text}
+                </Text>
+              ...
+  ```
 
 ## challenge 3 - edit todo
