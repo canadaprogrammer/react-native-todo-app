@@ -8,6 +8,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from './colors';
@@ -20,6 +21,7 @@ const STORAGE_TRACK_KEY = '@work';
 export default function App() {
   const [working, setWorking] = useState(true);
   const [text, setText] = useState('');
+  const [editText, setEditText] = useState('');
   const [toDos, setToDos] = useState({});
 
   const tracking = async (trackWorking) => {
@@ -41,6 +43,7 @@ export default function App() {
     tracking(true);
   };
   const onChangeText = (payload) => setText(payload);
+  const onEditText = (payload) => setEditText(payload);
   const saveToDos = async (toSave) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
@@ -69,7 +72,7 @@ export default function App() {
     // save to do
     const newToDos = {
       ...toDos,
-      [Date.now()]: { text, working, isComplete: false },
+      [Date.now()]: { text, working, isComplete: false, edit: false },
     };
     setToDos(newToDos);
     await saveToDos(newToDos);
@@ -105,6 +108,30 @@ export default function App() {
     });
     setToDos(editToDos);
     await saveToDos(editToDos);
+  };
+  const onEdit = (toDoKey) => {
+    const editToDos = { ...toDos };
+    Object.keys(editToDos).forEach((key) => {
+      if (key === toDoKey) {
+        if (!editToDos[toDoKey].edit) {
+          setEditText('');
+        }
+        editToDos[toDoKey].edit = !editToDos[toDoKey].edit;
+      }
+    });
+    setToDos(editToDos);
+  };
+  const editToDos = async (toDoKey) => {
+    const editToDos = { ...toDos };
+    Object.keys(editToDos).forEach((key) => {
+      if (key === toDoKey) {
+        editToDos[toDoKey].text = editText;
+        editToDos[toDoKey].edit = false;
+      }
+    });
+    setToDos(editToDos);
+    await saveToDos(editToDos);
+    setEditText('');
   };
   return (
     <View style={styles.container}>
@@ -143,23 +170,49 @@ export default function App() {
                 style={styles.checkbox}
                 value={toDos[key].isComplete}
                 onValueChange={() => completeToDo(key)}
+                color={theme.grey}
               />
-              <Text
-                style={{
-                  ...styles.toDoText,
-                  textDecorationLine: toDos[key].isComplete
-                    ? 'line-through'
-                    : 'none',
-                  textDecorationStyle: 'solid',
-                }}
+              {toDos[key].edit ? (
+                <TextInput
+                  placeholder={toDos[key].text}
+                  onChangeText={onEditText}
+                  value={editText}
+                  onSubmitEditing={() => editToDos(key)}
+                  returnKeyType='done'
+                  style={styles.editInput}
+                />
+              ) : (
+                <TouchableWithoutFeedback onPress={() => completeToDo(key)}>
+                  <Text
+                    style={{
+                      ...styles.toDoText,
+                      textDecorationLine: toDos[key].isComplete
+                        ? 'line-through'
+                        : 'none',
+                      textDecorationStyle: 'solid',
+                      color: toDos[key].isComplete ? theme.grey : 'white',
+                    }}
+                  >
+                    {toDos[key].text}
+                  </Text>
+                </TouchableWithoutFeedback>
+              )}
+              <TouchableOpacity
+                onPress={() => onEdit(key)}
+                style={styles.btn}
+                disabled={toDos[key].isComplete}
               >
-                {toDos[key].text}
-              </Text>
+                <FontAwesome5
+                  name='pencil-alt'
+                  size={16}
+                  color={toDos[key].isComplete ? 'transparent' : theme.grey}
+                />
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => removeToDo(key)}
-                style={styles.delBtn}
+                style={styles.btn}
               >
-                <FontAwesome5 name='trash-alt' size={16} color={theme.gray} />
+                <FontAwesome5 name='trash-alt' size={16} color={theme.grey} />
               </TouchableOpacity>
             </View>
           ) : null
@@ -205,13 +258,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  checkbox: {
+    marginRight: 8,
+  },
+  editInput: {
+    backgroundColor: 'white',
+    borderRadius: 5,
+    fontSize: 16,
+    fontWeight: '500',
+    width: '58%',
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+  },
   toDoText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '500',
-    width: '70%',
+    width: '58%',
+    paddingVertical: 8,
+    paddingHorizontal: 8,
   },
-  delBtn: {
+  btn: {
     paddingVertical: 8,
     paddingHorizontal: 16,
   },

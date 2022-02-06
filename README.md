@@ -478,6 +478,7 @@
 
 - ```jsx
   ...
+  import { ..., TouchableWithoutFeedback } from 'react-native';
   import Checkbox from 'expo-checkbox';
   ...
   export default function App() {
@@ -498,19 +499,125 @@
                   style={styles.checkbox}
                   value={toDos[key].isComplete}
                   onValueChange={() => completeToDo(key)}
+                  color={theme.grey}
                 />
-                <Text
-                  style={{
-                    ...styles.toDoText,
-                    textDecorationLine: toDos[key].isComplete
-                      ? 'line-through'
-                      : 'none',
-                    textDecorationStyle: 'solid',
-                  }}
-                >
-                  {toDos[key].text}
-                </Text>
+                <TouchableWithoutFeedback onPress={() => completeToDo(key)}>
+                  <Text
+                    style={{
+                      ...styles.toDoText,
+                      textDecorationLine: toDos[key].isComplete
+                        ? 'line-through'
+                        : 'none',
+                      textDecorationStyle: 'solid',
+                      color: toDos[key].isComplete ? theme.grey : 'white',
+                    }}
+                  >
+                    {toDos[key].text}
+                  </Text>
+                </TouchableWithoutFeedback>
               ...
+  const styles = StyleSheet.create({
+    ...
+    checkbox: {
+      marginRight: 8,
+    },
+    ...
   ```
 
 ## challenge 3 - edit todo
+
+- ```jsx
+  ...
+  export default function App() {
+    ...
+    const [editText, setEditText] = useState('');
+    ...
+    const onEditText = (payload) => setEditText(payload);
+    ...
+    const addToDo = async () => {
+      ...
+      const newToDos = {
+        ...toDos,
+        [Date.now()]: { ..., edit: false },
+      };
+      ...
+    };
+    ...
+    const onEdit = (toDoKey) => {
+      const editToDos = { ...toDos };
+      Object.keys(editToDos).forEach((key) => {
+        if (key === toDoKey) {
+          if (!editToDos[toDoKey].edit) {
+            setEditText('');
+          }
+          editToDos[toDoKey].edit = !editToDos[toDoKey].edit;
+        }
+      });
+      setToDos(editToDos);
+    };
+    const editToDos = async (toDoKey) => {
+      const editToDos = { ...toDos };
+      Object.keys(editToDos).forEach((key) => {
+        if (key === toDoKey) {
+          editToDos[toDoKey].text = editText;
+          editToDos[toDoKey].edit = false;
+        }
+      });
+      setToDos(editToDos);
+      await saveToDos(editToDos);
+      setEditText('');
+    };
+    return (
+      ...
+                <Checkbox
+                  ...
+                />
+                {toDos[key].edit ? (
+                  <TextInput
+                    placeholder={toDos[key].text}
+                    onChangeText={onEditText}
+                    value={editText}
+                    onSubmitEditing={() => editToDos(key)}
+                    returnKeyType='done'
+                    style={styles.editInput}
+                  />
+                ) : (
+                  <TouchableWithoutFeedback onPress={() => completeToDo(key)}>
+                    ...
+                  </TouchableWithoutFeedback>
+                )}
+                <TouchableOpacity
+                  onPress={() => onEdit(key)}
+                  style={styles.btn}
+                  disabled={toDos[key].isComplete}
+                >
+                  <FontAwesome5
+                    name='pencil-alt'
+                    size={16}
+                    color={toDos[key].isComplete ? 'transparent' : theme.grey}
+                  />
+                </TouchableOpacity>
+              ...
+  const styles = StyleSheet.create({
+    ...
+    editInput: {
+      backgroundColor: 'white',
+      borderRadius: 5,
+      fontSize: 16,
+      fontWeight: '500',
+      width: '58%',
+      paddingVertical: 8,
+      paddingHorizontal: 8,
+    },
+    toDoText: {
+      ...
+      width: '58%',
+      paddingVertical: 8,
+      paddingHorizontal: 8,
+    },
+    btn: {
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+    },
+    ...
+  ```
