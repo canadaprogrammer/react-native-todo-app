@@ -701,3 +701,11 @@
     ```
 
 - `yarn deploy`
+
+## Expo
+
+- Using Expo, we can't access the infrastructure.
+
+- Expo app is heavy because it has all API.
+
+- You can use create react native app instead of expo.
