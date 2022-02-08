@@ -621,3 +621,55 @@
     },
     ...
   ```
+
+## Publish App
+
+- on Expo Developer Tool
+
+  - Click `Publish or republish project`
+
+  - Copy the url: https://expo.io/@jinpark1504/projects/react-work-travel
+
+## Fix bugs related to React Native Web
+
+- Style
+
+  - use inline style instead of StyleSheet for Text
+
+  - ```jsx
+    
+    <Text
+      style={{
+        ...styles.toDoText,
+        fontSize: 16,
+        fontWeight: '500',
+        width: 'calc(100% - 24px - 48px - 46px)',
+        paddingVertical: 8,
+        paddingHorizontal: 8,
+        textDecorationLine: toDos[key].isComplete
+          ? 'line-through'
+          : 'none',
+        textDecorationStyle: 'solid',
+        color: toDos[key].isComplete ? theme.grey : 'white',
+      }}
+    >
+    ```
+
+- Alert is not working on Web
+
+  - ```jsx
+    import { Platform } from 'react-native';
+
+    const removeToDo = async (key) => {
+      if (Platform.OS === 'web') {
+        const ok = confirm('Are you sure to delete "' + toDos[key].text + '?"');
+        if (ok) {
+          const newToDos = { ...toDos };
+          delete newToDos[key];
+          setToDos(newToDos);
+          saveToDos(newToDos);
+        }
+      } else {
+        Alert.alert(...);
+      }
+    ```
