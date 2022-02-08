@@ -673,3 +673,31 @@
         Alert.alert(...);
       }
     ```
+
+## Splash page
+
+- change it on `app.json`
+
+  - Properties: https://docs.expo.dev/versions/v44.0.0/config/app/
+
+## Build for App Store
+
+- expo build a standalone app: https://docs.expo.dev/distribution/uploading-apps/
+
+  - the building will happen on Expo server
+
+## Publish Website
+
+- `yarn add -D gh-pages`
+
+- On `package.json`
+
+  - ```json
+    "homepage": "https://canadaprogrammer.github.io/react-native-work-travel",
+    "scripts": {
+      "deploy": "gh-pages -d web-build",
+      "predeploy": "expo build:web"
+    }
+    ```
+
+- `yarn deploy`
